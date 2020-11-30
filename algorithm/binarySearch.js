@@ -14,16 +14,17 @@ function binarySearch(array, target) {
 
   let start = 0;
   let end = array.length -1;
-  let mid;
   
+  // 이진탐색에서 while을 쓴 이유? 몇 번 돌아야하는지 모르기 때문
   while(start <= end) {
-    mid = Math.floor((end + start)/2);
-    if(array[mid] < target) 
+    const mid = Math.floor((end + start) / 2); // 아래에서 재할당되는 경우 없음, const 가능
+
+    if(array[mid] === target) return mid;
+
+    if(array[mid] < target)
       start = mid + 1;
-    else if(array[mid] > target) 
+    else
       end = mid - 1;
-    else 
-      return mid;
   }
   return -1;
 }
