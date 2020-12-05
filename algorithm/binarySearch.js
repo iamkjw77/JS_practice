@@ -1,17 +1,4 @@
 function binarySearch(array, target) {
-  function sort() {
-    for(let i = 0; i < array.length; i++) {
-      for(let j = i+1; j < array.length; j++) {
-        if(array[i] - array[j] > 0) {
-          let tmp = array[i];
-          array[i] = array[j];
-          array[j] = tmp;
-        }
-      }
-    }
-  }
-  sort();
-
   let start = 0;
   let end = array.length -1;
   
@@ -29,7 +16,6 @@ function binarySearch(array, target) {
   return -1;
 }
 
-console.log(binarySearch([10, 5, 3, 2, 4, 1], 1)); // 0
 console.log(binarySearch([1, 2, 3, 4, 5, 6], 1)); // 0
 console.log(binarySearch([1, 2, 3, 4, 5, 6], 3)); // 2
 console.log(binarySearch([1, 2, 3, 4, 5, 6], 5)); // 4
