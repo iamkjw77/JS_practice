@@ -5,10 +5,7 @@ let todos = [
 ];
 
 function toggleCompletedAll() {
-  todos.map(todo => {
-    todo.completed = true;
-    return todo;
-  });
+  todos.map(todo => { todo.completed = true; });
 }
 
 toggleCompletedAll();
