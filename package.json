@@ -1,0 +1,26 @@
+{
+  "name": "JS_practice",
+  "version": "1.0.0",
+  "description": "패스트캠퍼스 자바스크립트 문제풀기",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamkjw77/JS_practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iamkjw77/JS_practice/issues"
+  },
+  "homepage": "https://github.com/iamkjw77/JS_practice#readme",
+  "devDependencies": {
+    "eslint": "^7.17.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-html": "^6.1.1",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}
