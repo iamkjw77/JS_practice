@@ -1,25 +1,12 @@
 function getRestCoordinate(array) {
-  const x = {};
-  const y = {};
   const answer = [];
 
-  array.forEach(v => {
-    if (!x[v[0]]) x[v[0]] = 1;
-    else x[v[0]]++;
-
-    if (!y[v[1]]) y[v[1]] = 1;
-    else y[v[1]]++;
-  });
-
-  Object.entries(x).reduce((acc, [key, value]) => {
-    if (value === 1) acc.push(+key);
-    return acc;
-  }, answer);
-
-  return Object.entries(y).reduce((acc, [key, value]) => {
-    if (value === 1) acc.push(+key);
-    return acc;
-  }, answer);
+  for (let i = 0; i <= 1; i++) {
+    if (array[0][i] === array[1][i]) answer.push(array[2][i]);
+    else if (array[0][i] === array[2][i]) answer.push(array[1][i]);
+    else answer.push(array[0][i]);
+  }
+  return answer;
 }
 
 console.log(getRestCoordinate([[1, 4], [3, 4], [3, 10]])); // [1, 10]
