@@ -60,37 +60,89 @@
         <div class="lap-title">Laps</div>
         <div class="lap-title">Time</div>
         <!-- 아래는 자바스크립트로 동적 생성한다. -->
-        <div>1</div>
+        <!-- <div>1</div>
         <div>00:00:65</div>
         <div>2</div>
         <div>00:01:21</div>
         <div>3</div>
-        <div>00:03:95</div>
+        <div>00:03:95</div> -->
       </div>
     </div>
     <script>
       const $btn = document.querySelector('.control');
       const $timer = document.querySelector('.display');
+      const $reset = document.querySelector('button[disabled]');
+      const $laps = document.querySelector('.laps');
+
+      let time = 0;
+      let running = 0;
+      let count = 0;
+
+      const reset = () => {
+        running = 0;
+        time = 0;
+        count = 0;
+        $btn.innerHTML = 'Start';
+        $timer.innerHTML = '00:00:00';
+        $reset.setAttribute('disabled', 'disabled');
+        $laps.innerHTML = `
+          <div class="lap-title">Laps</div>
+          <div class="lap-title">Time</div>
+        `;
+      };
+
+      const lap = () => {
+        count++;
+        const $fragment = document.createDocumentFragment();
+        const $count = document.createElement('div');
+        const $lap = document.createElement('div');
+
+        $count.textContent = `${count}`;
+        $lap.textContent = $timer.innerHTML;
+
+        $fragment.append($count, $lap);
+        $laps.appendChild($fragment);
+      };
+
+      const increase = () => {
+        if (running === 1) {
+          setTimeout(() => {
+            time++;
+            let mm = Math.floor(time / 100 / 60);
+            let ss = Math.floor(time / 100) % 60;
+            let ms = time % 100;
+
+            if (mm < 10) mm = '0' + mm;
+            if (ss < 10) ss = '0' + ss;
+            if (ms < 10) ms = '0' + ms;
+
+            $timer.innerHTML = `${mm}:${ss}:${ms}`;
+            increase();
+          }, 10);
+        }
+      };
+
+      const startPause = () => {
+        if (running === 0) {
+          running = 1;
+          increase();
+          $btn.innerHTML = 'Stop';
+          $reset.removeAttribute('disabled');
+          $reset.innerHTML = 'Lap';
+        } else {
+          running = 0;
+          $btn.innerHTML = 'Start';
+          $reset.innerHTML = 'Reset';
+        }
+      };
 
       $btn.onclick = () => {
-        // let timeId = 0;
-        // if ($btn.textContent === 'Start') {
-        //   $btn.textContent = 'Stop';
-        //   let mm = 0;
-        //   let ss = 0;
-        //   let ms = 0;
-        //   timeId = setInterval(() => {
-        //     ms++;
-        //     ss = ms >= 100 ? ss++ : ss;
-        //     mm = ss >= 60 ? mm++ : mm;
+        startPause();
+      };
 
-        //     $timer.textContent = `${mm}:${ss}:${ms}`;
-        //   }, 100);
-        // } else {
-        //   $btn.textContent = 'Start';
-        //   clearInterval(timeId);
-        // }
-        console.log(new Date().getTime());
+      $reset.onclick = () => {
+        if ($reset.innerHTML === 'Reset') reset();
+        else lap();
       };
     </script>
   </body>
