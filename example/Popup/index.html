@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Popup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400" rel="stylesheet" />
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+    <style>
+      *,
+      *::after,
+      *::before {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Open Sans';
+        font-weight: 300;
+      }
+      .title {
+        color: #db5b33;
+        font-weight: 300;
+        text-align: center;
+      }
+      /* 팝업을 위한 CSS */
+      .popup-cotainer {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: rgba(0, 0, 0, 0.3);
+        width: 100vw;
+        height: 100vh;
+      }
+      .popup {
+        position: relative;
+        background: #fff;
+        max-width: 520px;
+        min-height: 200px;
+        margin: 20% auto 0;
+        padding: 20px;
+      }
+      h2 {
+        margin: 0;
+      }
+      .closed {
+        position: absolute;
+        right: 0;
+        top: 0;
+        background: none;
+        border: 0;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Popup</h1>
+    <button class="popup-button">toggle popup</button>
+
+    <!-- 팝업을 위한 HTML -->
+    <div class="popup-cotainer">
+      <div class="popup">
+        <h2 class="title">Hello</h2>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi ratione fugit assumenda? Ad cum maiores qui quibusdam, magnam molestias dolores.</p>
+        <input class="popup-input" type="text" />
+        <button class="popup-ok">OK</button>
+        <button class="popup-cancel">Cancel</button>
+        <button class="closed" aria-label="닫기">X</button>
+      </div>
+    </div>
+
+    <p class="popup-message"></p>
+    <script>
+      const $popupBtn = document.querySelector('.popup-button');
+      const $modalcont = document.querySelector('.popup-cotainer');
+      const $input = document.querySelector('.popup-input');
+      const $popupMsg = document.querySelector('.popup-message');
+
+      $popupBtn.onclick = () => {
+        $modalcont.style.display = 'block';
+        $popupMsg.textContent = '';
+      };
+
+      $modalcont.onclick = e => {
+        if (e.target.matches('.popup-ok')) {
+          $modalcont.style.display = 'none';
+          $popupMsg.textContent = $input.value;
+          $input.value = '';
+        } else if (e.target.matches('.popup-cancel') || e.target.matches('.closed')) {
+          $modalcont.style.display = 'none';
+          $input.value = '';
+        } else if (e.target === $modalcont) {
+          $modalcont.style.display = 'none';
+        }
+      };
+
+      $input.onkeyup = e => {
+        if (e.key === 'Enter') {
+          $modalcont.style.display = 'none';
+          $popupMsg.textContent = $input.value;
+          $input.value = '';
+        }
+      };
+    </script>
+  </body>
+</html>
