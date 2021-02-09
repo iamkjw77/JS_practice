@@ -153,8 +153,8 @@
         const minute = now.getMinutes();
         const second = now.getSeconds();
 
-        const hourDeg = hour > 12 ? (hour - 12) * 30 + (minute * 0.5) : hour * 30 + (minute * 0.5);
-        const minuteDeg = minute * 6;
+        const hourDeg = hour * 30 + (minute * 0.5) + (second * (1 / 120));
+        const minuteDeg = (minute * 6) + (second * 0.1);
         const secondDeg = second * 6;
 
         $hHand.style.setProperty('--deg', hourDeg);
