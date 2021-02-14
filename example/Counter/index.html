@@ -50,29 +50,36 @@
       <button class="decrease"><i class="bx bx-minus-circle"></i></button>
     </div>
     <script>
-      const $increase = document.querySelector('.increase');
-      const $decrease = document.querySelector('.decrease');
-      const $counter = document.querySelector('.counter');
+      // 변수는 최소한으로 사용하자.
+      // 관련성 있는 것들은 하나로 묶자.
+      // 즉시 실행 함수는 한 번만 호출된다.
+      // 클로저를 사용해서 의도적으로 하나로 묶는 연습을 하자!
 
-      const counter = (() => {
+      const count = (() => {
+        // Model
         let num = 0;
-
-        return predicate => {
-          num = predicate(num);
-          return num;
+        const $counter = document.querySelector('.counter');
+      
+        // View
+        const render = () => {
+          $counter.textContent = num;
+        };
+      
+        // Controller
+        return {
+          increase() {
+            num += 1;
+            render();
+          },
+          decrease() {
+            if (num > 0) num -= 1;
+            render();
+          }
         };
       })();
-
-      const increase = n => ++n;
-      const decrease = n => (n > 0 ? --n : 0);
-
-      $increase.onclick = () => {
-        $counter.textContent = counter(increase);
-      };
-
-      $decrease.onclick = () => {
-        $counter.textContent = counter(decrease);
-      };
-    </script>
+      
+      document.querySelector('.increase').onclick = count.increase;
+      document.querySelector('.decrease').onclick = count.decrease;
+      </script>
   </body>
 </html>

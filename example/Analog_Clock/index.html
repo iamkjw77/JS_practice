@@ -143,24 +143,27 @@
       <div class="time time12">|</div>
     </div>
     <script>
-      const $hHand = document.querySelector('.hand.hour');
-      const $mHand = document.querySelector('.hand.minute');
-      const $sHand = document.querySelector('.hand.second');
+      const renderTime = (() => {
+        // 아래 3가지 변수는 딱 한 번만 실행된다.
+        const $hour = document.querySelector('.hand.hour');
+        const $minute = document.querySelector('.hand.minute');
+        const $second = document.querySelector('.hand.second');
+
+        return () => {
+          const date = new Date();
+          const hour = date.getHours();
+          const minute = date.getMinutes();
+          const second = date.getSeconds();
+
+          $hour.style.setProperty('--deg', (hour * 30) + (minute * 0.5) + (second * (1 / 120)));
+          $minute.style.setProperty('--deg', (minute * 6) + (second * 0.1));
+          $second.style.setProperty('--deg', second * 6);
+        };
+      })();
       
-      setInterval(() => {
-        const now = new Date();
-        const hour = now.getHours();
-        const minute = now.getMinutes();
-        const second = now.getSeconds();
-
-        const hourDeg = hour * 30 + (minute * 0.5) + (second * (1 / 120));
-        const minuteDeg = (minute * 6) + (second * 0.1);
-        const secondDeg = second * 6;
-
-        $hHand.style.setProperty('--deg', hourDeg);
-        $mHand.style.setProperty('--deg', minuteDeg);
-        $sHand.style.setProperty('--deg', secondDeg);
-      }, 1000);
+      document.addEventListener('DOMContentLoaded', () => {
+        setInterval(renderTime, 1000);
+      });
     </script>
   </body>
 </html>

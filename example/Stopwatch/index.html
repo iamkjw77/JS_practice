@@ -47,6 +47,7 @@
         width: 260px;
         margin: 10px auto;
         font-size: 0.5em;
+        display: none;
       }
     </style>
   </head>
@@ -69,80 +70,114 @@
       </div>
     </div>
     <script>
-      const $btn = document.querySelector('.control');
-      const $timer = document.querySelector('.display');
-      const $reset = document.querySelector('button[disabled]');
-      const $laps = document.querySelector('.laps');
+      // querySelectorAll은 NodeList를 반환, NodeList는 이터러블이면서 유사배열객체이다.
+      // 따라서 배열 디스트럭처링 사용가능
+      const [$btnStartOrStop, $btnResetOrLaps] = document.querySelectorAll('.control');
+      
+      let isRunning = false;
+      let elapsedTime = { mm: 0, ss: 0, ms: 0 };
+      let laps = [];
+      
+      const formatElapsedTime = (() => {
+        const format = n => (n < 10 ? '0' + n : n + '');
+        return ({ mm, ss, ms }) => `${format(mm)}:${format(ss)}:${format(ms)}`;
+      })();
+      
+      const renderElapsedTime = (() => {
+        // $display는 한 번만 만들어져야 하므로 클로저 사용
+        const $display = document.querySelector('.display');
+        return () => {
+          $display.textContent = formatElapsedTime(elapsedTime);
+        };
+      })();
 
-      let time = 0;
-      let running = 0;
-      let count = 0;
+      const handleStartOrStop = (() => {
+        let timeId = null;
 
-      const reset = () => {
-        running = 0;
-        time = 0;
-        count = 0;
-        $btn.innerHTML = 'Start';
-        $timer.innerHTML = '00:00:00';
-        $reset.setAttribute('disabled', 'disabled');
-        $laps.innerHTML = `
-          <div class="lap-title">Laps</div>
-          <div class="lap-title">Time</div>
-        `;
-      };
+        const start = () => {
+          $btnResetOrLaps.disabled = false;
+      
+          let { mm, ss, ms } = elapsedTime;
+      
+          timeId = setInterval(() => {
+            ms += 1;
 
-      const lap = () => {
-        count++;
-        const $fragment = document.createDocumentFragment();
-        const $count = document.createElement('div');
-        const $lap = document.createElement('div');
+            if (ms > 99) {
+              ss += 1;
+              ms = 0;
+            }
 
-        $count.textContent = `${count}`;
-        $lap.textContent = $timer.innerHTML;
+            if (ss > 59) {
+              mm += 1;
+              ss = 0;
+            }
 
-        $fragment.append($count, $lap);
-        $laps.appendChild($fragment);
-      };
-
-      const increase = () => {
-        if (running === 1) {
-          setTimeout(() => {
-            time++;
-            let mm = Math.floor(time / 100 / 60);
-            let ss = Math.floor(time / 100) % 60;
-            let ms = time % 100;
-
-            if (mm < 10) mm = '0' + mm;
-            if (ss < 10) ss = '0' + ss;
-            if (ms < 10) ms = '0' + ms;
-
-            $timer.innerHTML = `${mm}:${ss}:${ms}`;
-            increase();
+            elapsedTime = { mm, ss, ms };
+            renderElapsedTime();
           }, 10);
-        }
-      };
+        };
 
-      const startPause = () => {
-        if (running === 0) {
-          running = 1;
-          increase();
-          $btn.innerHTML = 'Stop';
-          $reset.removeAttribute('disabled');
-          $reset.innerHTML = 'Lap';
+        const stop = () => {
+          clearInterval(timeId);
+        };
+
+        return () => {
+          isRunning ? stop() : start();
+          isRunning = !isRunning;
+      
+          $btnStartOrStop.textContent = isRunning ? 'Stop' : 'Start';
+          $btnResetOrLaps.textContent = isRunning ? 'Lap' : 'Reset';
+        };
+      })();
+
+      const renderLaps = () => {
+        const { length } = laps;
+        const $laps = document.querySelector('.laps');
+
+        if (laps.length === 0) {
+          document.querySelectorAll('.laps > div:not(.lap-title)').forEach($lap => $lap.remove());
+          $laps.style.display = 'none';
         } else {
-          running = 0;
-          $btn.innerHTML = 'Start';
-          $reset.innerHTML = 'Reset';
+          // 랩 타임을 생성하고 DOM에 반영한다.
+          const $fragement = document.createDocumentFragment();
+      
+          const $index = document.createElement('div');
+          $index.textContent = length;
+          $fragement.appendChild($index);
+
+          const $newLap = document.createElement('div');
+          $newLap.textContent = formatElapsedTime(laps[length - 1]);
+          $fragement.appendChild($newLap);
+
+          $laps.appendChild($fragement);
+          $laps.style.display = 'grid';
         }
       };
 
-      $btn.onclick = () => {
-        startPause();
-      };
+      const handleResetOrLaps = (() => {
+        const addLap = () => {
+          laps = [...laps, elapsedTime];
+          renderLaps();
+        };
 
-      $reset.onclick = () => {
-        if ($reset.innerHTML === 'Reset') reset();
-        else lap();
+        const reset = () => {
+          $btnResetOrLaps.disabled = true;
+
+          elapsedTime = { mm: 0, ss: 0, ms: 0 };
+          renderElapsedTime();
+
+          laps = [];
+          renderLaps();
+        };
+
+        return () => {
+          isRunning ? addLap() : reset();
+        };
+      })();
+
+      document.querySelector('.stopwatch').onclick = e => {
+        if (!e.target.classList.contains('control')) return;
+        e.target === $btnStartOrStop ? handleStartOrStop() : handleResetOrLaps();
       };
     </script>
   </body>

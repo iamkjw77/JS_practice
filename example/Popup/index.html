@@ -7,6 +7,7 @@
     <title>Popup</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400" rel="stylesheet" />
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
     <style>
       *,
       *::after,
@@ -23,83 +24,95 @@
         text-align: center;
       }
       /* 팝업을 위한 CSS */
-      .popup-cotainer {
-        display: none;
-        position: absolute;
-        left: 0;
-        top: 0;
-        background: rgba(0, 0, 0, 0.3);
-        width: 100vw;
-        height: 100vh;
-      }
       .popup {
-        position: relative;
-        background: #fff;
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translate3d(-50%, 0, 0);
         max-width: 520px;
-        min-height: 200px;
-        margin: 20% auto 0;
-        padding: 20px;
+        min-width: 200px;
+        background-color: #fff;
+        padding: 20px 40px;
+        box-shadow: 0 7px 8px -4px rgba(0, 0, 0, .2), 0 13px 19px 2px rgba(0, 0, 0, .14), 0 5px 24px 4px rgba(0, 0, 0, .12);
+        border-radius: 5px;
+        z-index: 1000;
+        display: none;
       }
-      h2 {
-        margin: 0;
-      }
-      .closed {
-        position: absolute;
-        right: 0;
+      .overlay {
+        position: fixed;
         top: 0;
-        background: none;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, .4);
+        z-index: 999;
+        display: none;
+      }
+      .btn {
+        cursor: pointer;
+        outline: none;
+      }
+      .btn.close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 30px;
         border: 0;
-        padding: 10px;
+        background-color: transparent;
       }
     </style>
   </head>
   <body>
     <h1 class="title">Popup</h1>
-    <button class="popup-button">toggle popup</button>
 
     <!-- 팝업을 위한 HTML -->
-    <div class="popup-cotainer">
-      <div class="popup">
-        <h2 class="title">Hello</h2>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi ratione fugit assumenda? Ad cum maiores qui quibusdam, magnam molestias dolores.</p>
-        <input class="popup-input" type="text" />
-        <button class="popup-ok">OK</button>
-        <button class="popup-cancel">Cancel</button>
-        <button class="closed" aria-label="닫기">X</button>
-      </div>
-    </div>
-
+    <form class="popup">
+      <h1 class="title">Hello!</h1>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, incidunt natus fuga ex explicabo soluta tenetur possimus eaque delectus quis?
+      </p>
+      <button type="button" class="btn close"><i class="fas fa-times"></i></button>
+      <input type="text" />
+      <button type="submit" class="btn ok">OK</button>
+      <button type="button" class="btn cancel">Cancel</button>
+    </form>
+    <div class="overlay"></div>
+    <button class="btn toggle-popup">toggle popup</button>
     <p class="popup-message"></p>
     <script>
-      const $popupBtn = document.querySelector('.popup-button');
-      const $modalcont = document.querySelector('.popup-cotainer');
-      const $input = document.querySelector('.popup-input');
-      const $popupMsg = document.querySelector('.popup-message');
+      const $popup = document.querySelector('.popup');
+      const $popupInput = document.querySelector('.popup > input');
+      const $popupMessage = document.querySelector('.popup-message');
+      const $overlay = document.querySelector('.overlay');
 
-      $popupBtn.onclick = () => {
-        $modalcont.style.display = 'block';
-        $popupMsg.textContent = '';
-      };
+      const popup = (() => {
+        // 팝업창이 띄워져 있는지 DOM을 들여다보지 말고, 변수를 만들어 상태를 관리하자.
+        let isActive = false;
 
-      $modalcont.onclick = e => {
-        if (e.target.matches('.popup-ok')) {
-          $modalcont.style.display = 'none';
-          $popupMsg.textContent = $input.value;
-          $input.value = '';
-        } else if (e.target.matches('.popup-cancel') || e.target.matches('.closed')) {
-          $modalcont.style.display = 'none';
-          $input.value = '';
-        } else if (e.target === $modalcont) {
-          $modalcont.style.display = 'none';
-        }
-      };
+        return {
+          toggle() {
+            isActive = !isActive;
+            $popup.style.display = isActive ? 'block' : 'none';
+            $overlay.style.display = isActive ? 'block' : 'none';
+          },
+          close() {
+            $popup.style.display = 'none';
+            $overlay.style.display = 'none';
+            $popupInput.value = '';
+            isActive = false;
+          }
+        };
+      })();
 
-      $input.onkeyup = e => {
-        if (e.key === 'Enter') {
-          $modalcont.style.display = 'none';
-          $popupMsg.textContent = $input.value;
-          $input.value = '';
-        }
+      document.querySelector('.toggle-popup').onclick = popup.toggle;
+      document.querySelector('.close').onclick = popup.close;
+      document.querySelector('.cancel').onclick = popup.close;
+      $overlay.onclick = popup.close;
+
+      $popup.onsubmit = e => {
+        e.preventDefault();
+        $popupMessage.textContent = `from popup: ${$popupInput.value}`;
+        popup.close();
       };
     </script>
   </body>
