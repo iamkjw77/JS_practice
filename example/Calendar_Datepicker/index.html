@@ -7,6 +7,7 @@
     <!-- 원하는 폰트와 아이콘을 사용해도 좋다. -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet" />
     <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
     <style>
       *,
       *::after,
@@ -24,12 +25,167 @@
       }
 
       /* 뷰를 구현하세요. */
+      p {
+        margin: 0;
+      }
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .calendar {
+        --calendar-size: 300;
+        width: calc(var(--calendar-size) * 1px);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        margin: 0 auto;
+      }
+
+      header {
+        position: relative;
+        background-color: rgb(83, 194, 83);
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+        border-radius: 10px 10px 0 0;
+      }
+      .month {
+        height: 22px;
+      }
+      .year {
+        font-size: 13px;
+      }
+      .btn {
+        position: absolute;
+        top: 25px;
+        cursor: pointer;
+        z-index: 100;
+        background-color: transparent;
+        border: 0;
+        color: #fff;
+      }
+      .prev {
+        left: 10px;
+      }
+      .next {
+        right: 10px;
+      }
+
+      .calendar_container {
+        display: grid;
+        grid-template-rows: repeat(7, 1fr);
+        grid-template-columns: repeat(7, 1fr);
+      }
+      .calendar_container div {
+        text-align: center;
+        font-size: 12px;
+        padding: 5px;
+      }
+      .day {
+        color: rgb(156, 156, 156);
+      }
     </style>
   </head>
   <body>
     <h1 class="title">Calendar</h1>
     <div class="calendar">
       <!-- 뷰를 구현하세요 -->
+      <header>
+        <p class="month"></p>
+        <p class="year"></p>
+        <button class="btn prev"><i class="fas fa-caret-left"></i></button>
+        <button class="btn next"><i class="fas fa-caret-right"></i></button>
+      </header>
+  
+      <div class="calendar_container">
+        <div class="day">SUN</div>
+        <div class="day">MON</div>
+        <div class="day">TUE</div>
+        <div class="day">WED</div>
+        <div class="day">THU</div>
+        <div class="day">FRI</div>
+        <div class="day">SAT</div>
+      </div>
     </div>
+    <script>
+      const $header = document.querySelector('header');
+      const $month = document.querySelector('.month');
+      const $year = document.querySelector('.year');
+      const [$prev, $next] = document.querySelectorAll('.btn');
+
+      const $calendarCont = document.querySelector('.calendar_container');
+
+      const date = new Date();
+      let yearNum = date.getFullYear();
+      let monthNum = date.getMonth();
+      let dayNum = new Date(`${yearNum}, ${monthNum + 1}, 1`).getDay();
+
+      const month = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ];
+
+      const leapYear = (yearNum % 4 === 0 && yearNum % 100 !== 0)
+        || (yearNum % 4 === 0 && yearNum % 100 === 0 && yearNum % 400 === 0) ? 29 : 28;
+      const maxDay = [31, leapYear, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+      $month.textContent = month[monthNum];
+      $year.textContent = yearNum;
+
+      const initDay = () => {
+        let now = '';
+        let pre = '';
+        let html = '';
+      
+        for (let i = 0, j = dayNum; i < maxDay[monthNum + 1]; i++) {
+          if (j > 0) {
+            pre += '<div></div>';
+            j--;
+          }
+          now += `<div>${i + 1}</div>`;
+        }
+        html = pre + now;
+        $calendarCont.insertAdjacentHTML('beforeend', html);
+      };
+
+      const prev = () => {
+        if (monthNum > 0) monthNum -= 1;
+        else {
+          yearNum -= 1;
+          monthNum = 11;
+        }
+
+        $month.textContent = month[monthNum];
+        $year.textContent = yearNum;
+      };
+
+      const next = () => {
+        if (monthNum < 11) monthNum += 1;
+        else {
+          yearNum += 1;
+          monthNum = 0;
+        }
+
+        $month.textContent = month[monthNum];
+        $year.textContent = yearNum;
+      };
+
+      document.addEventListener('DOMContentLoaded', initDay);
+
+      $header.onclick = e => {
+        if (!e.target.classList.contains('btn')) return;
+        e.target === $prev ? prev() : next();
+      };
+    </script>
   </body>
 </html>
